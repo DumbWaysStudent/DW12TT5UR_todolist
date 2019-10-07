@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
 
-export default class List extends Component  {
+export default class Todo extends Component  {
 constructor()
 {
   super()
