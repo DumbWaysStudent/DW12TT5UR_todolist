@@ -5,18 +5,21 @@ import { CheckBox, Icon, Button } from 'native-base';
 export default class Todo extends Component  {
 
 
-  constructor()
+  constructor(props)
 {
-  super()
+  super(props)
   this.state ={
     todo :[
-      {id: 0, task: 'work'},
-      {id : 1, task : 'swim'},
-      {id : 2, task : 'study'},
-      {id : 3, task: 'code'},
-      {id: 4, task: 'run'}
+      {id: 0, task: 'work', checkMode:false},
+      {id : 1, task : 'swim', checkMode:false},
+      {id : 2, task : 'study', checkMode:false},
+      {id : 3, task: 'code', checkMode:false},
+      {id: 4, task: 'run', checkMode:false}
     ],    
-    input : ''
+    input : '',
+    editMode : false,
+    index : '',
+    checkMode : true,
   }
 }
 
@@ -25,23 +28,50 @@ onText(text) {
  }
 
  onClickAdd(){
-  if (this.state.input == '') {
-    alert('Field Harus di isi');
-  } else {
-    const addTodo = {id: this.state.todo.length + 1, task : this.state.input}
-    const newTodos = [...this.state.todo, addTodo]
-    this.setState({
-     todo : newTodos
-    },
-    this.setState({input : ''}))
-  }
+    if (this.state.input == '') {
+      alert('Field Harus di isi');
+    } else {
+      const addTodo = {id: this.state.todo.length + 1, task : this.state.input}
+      const newTodos = [...this.state.todo, addTodo]
+      this.setState({
+       todo : newTodos
+      },
+      this.setState({input : ''}))
+    }   
  }
 
  onClickDelete(select){
-  console.log("Submitted" + select);
+  // console.log("Submitted" + select);
   const {todo} = this.state
   var filterIdx = todo.filter((item) => item.id !== select.id)
   this.setState({todo : filterIdx})
+ }
+
+ onClickEdit(itemEdit){
+   this.setState({
+     editMode :!this.setState.editMode, input : itemEdit.task, index : itemEdit.id
+   })   
+  // console.log("edit mode value is : ", this.state.editMode);
+
+ }
+ onClickUpdate (){
+  const index = this.state.index
+  const data = this.state.todo
+  data[index].task = this.state.input
+  this.setState({
+    todo : [...data],
+    input : '',
+    index: '',
+    editMode : false
+  })
+ }
+
+ onClickCheck (item){
+  let data = this.state.todo
+  data[item].checkMode = !this.state.todo[item].checkMode
+   this.setState({
+     todo :[...data]
+   })
  }
 
 render () {
@@ -54,14 +84,21 @@ return(
             onChangeText={(text) => this.onText(text)} 
             value={this.state.input}
       TextInput/>
-      <Icon style={styles.iconAdd} name="md-add-circle" onPress={this.onClickAdd.bind(this)}/> 
+      { 
+        this.state.editMode === false ?  
+        <Icon style={styles.iconAdd} name="md-add-circle" onPress={this.onClickAdd.bind(this)}/> 
+        : 
+        <Icon style={styles.iconUpdate} name="ios-create" onPress={() => this.onClickUpdate()} />
+      }
     </View>
-    <View >
+    <View >      
       {this.state.todo.map((item)=>
         <View key={item.id} style={{justifyContent : "center", flexDirection :"row", marginTop : 10}}>
-          <Text  style={[styles.text, {width : "75%"}]}>{item.task}</Text>
-          <View style={{flexDirection : "row",  justifyContent : "space-evenly",marginLeft : 5, width : "20%"}}>
-          <Icon name="trash" style={styles.iconDelete} color="red" onPress={() => this.onClickDelete(item)}/>
+          <CheckBox onPress={() => this.onClickCheck(item.id)} checked={item.checkMode} style={{margin : 20}} />
+          <Text  style={[styles.text, {width : "70%"}]}>{item.task}</Text>
+          <View style={{flexDirection : "row",  justifyContent: "space-evenly",marginLeft : 1, width : "20%"}}>              
+              <Icon name="create" style={styles.iconEdit} onPress={() => this.onClickEdit(item)} />
+              <Icon name="trash" style={styles.iconDelete} color="red" onPress={() => this.onClickDelete(item)}/>
           </View>
         </View>)}       
     </View>
