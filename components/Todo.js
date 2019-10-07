@@ -51,7 +51,6 @@ onText(text) {
    this.setState({
      editMode :!this.setState.editMode, input : itemEdit.task, index : itemEdit.id
    })   
-  // console.log("edit mode value is : ", this.state.editMode);
 
  }
  onClickUpdate (){
